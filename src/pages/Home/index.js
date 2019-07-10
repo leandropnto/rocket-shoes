@@ -30,7 +30,7 @@ class Home extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'ADD_TO_CART',
-      action: product,
+      action: { product },
     });
   };
 
