@@ -10,7 +10,17 @@ import {
 import * as CartActions from '../../store/modules/cart/actions';
 import { Container, ProductTable, Total } from './styles';
 
-function Cart({ cart, removeFromCart }) {
+import { formatPrice } from '../../util/format';
+
+function Cart({ cart, removeFromCart, updateAmount, total }) {
+  const increment = product => {
+    updateAmount(product.id, product.amount + 1);
+  };
+
+  const decrement = product => {
+    updateAmount(product.id, product.amount - 1);
+  };
+
   return (
     <Container>
       <ProductTable>
@@ -34,17 +44,17 @@ function Cart({ cart, removeFromCart }) {
               </td>
               <td>
                 <div>
-                  <button type="button">
+                  <button type="button" onClick={() => decrement(product)}>
                     <MdRemoveCircleOutline color="#7159c1" size={20} />
                   </button>
                   <input type="numer" value={product.amount} readOnly />
-                  <button type="button">
+                  <button type="button" onClick={() => increment(product)}>
                     <MdAddCircleOutline color="#7159c1" size={20} />
                   </button>
                 </div>
               </td>
               <td>
-                <strong>{product.price}</strong>
+                <strong>{product.subtotal}</strong>
               </td>
               <td>
                 <button
@@ -62,7 +72,7 @@ function Cart({ cart, removeFromCart }) {
         <button type="button">Finalizar pedido</button>
         <Total>
           <span>TOTAL</span>
-          <strong>R$ 1920,28</strong>
+          <strong>{total}</strong>
         </Total>
       </footer>
     </Container>
@@ -70,7 +80,15 @@ function Cart({ cart, removeFromCart }) {
 }
 
 const mapStateToProps = state => ({
-  cart: state.cart,
+  cart: state.cart.map(product => ({
+    ...product,
+    subtotal: formatPrice(product.price * product.amount),
+  })),
+  total: formatPrice(
+    state.cart.reduce((total, product) => {
+      return total + product.price * product.amount;
+    }, 0)
+  ),
 });
 
 const mapDispatchToProps = dispatch =>
