@@ -12,13 +12,13 @@ import { Container, ProductTable, Total } from './styles';
 
 import { formatPrice } from '../../util/format';
 
-function Cart({ cart, removeFromCart, updateAmount, total }) {
+function Cart({ cart, removeFromCart, updateAmountRequest, total }) {
   const increment = product => {
-    updateAmount(product.id, product.amount + 1);
+    updateAmountRequest(product.id, product.amount + 1);
   };
 
   const decrement = product => {
-    updateAmount(product.id, product.amount - 1);
+    updateAmountRequest(product.id, product.amount - 1);
   };
 
   return (
@@ -35,12 +35,13 @@ function Cart({ cart, removeFromCart, updateAmount, total }) {
         </thead>
         <tbody>
           {cart.map(product => (
-            <tr>
+            <tr key={product.id}>
               <td>
                 <img src={product.image} alt={product.tile} />
               </td>
               <td>
                 <strong>{product.title}</strong>
+                {product.priceFormatted}
               </td>
               <td>
                 <div>
@@ -93,6 +94,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch =>
   bindActionCreators(CartActions, dispatch);
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps
